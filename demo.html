@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .page{
+            list-style:none;
+            width:800px;
+            margin:100px auto;
+            justify-content:center;
+            display:flex;
+        }
+        .page li{
+            width:40px;
+            height:40px;
+            text-align:center;
+            line-height:40px;
+            border:1px solid #333;
+            border-right:none;
+            cursor:pointer;
+        }
+        .page li:last-child{
+            border-right:1px solid #333;
+        }
+        .page li:hover{
+            background:#ddd;
+        }
+    </style>
+</head>
+<body>
+    <h1 id="nowPage"></h1>
+    <ul class="page" id="paging">
+       <li></li>
+       <li></li>
+    </ul>
+    <script src="//code.jquery.com/jquery.min.js"></script>
+    <script>
+        $(function(){
+           const totalPosts = 1578; //전체 글 수
+           const postsPerPage = 6; //한 번에 보여줄 글 수 
+           const pagesPerGroup = 7; //한 번에 보여줄 페이지 수
+           const totalPages = Math.ceil(totalPosts / postsPerPage ); //전체 페이지 수
+           let currentPage = 1;
+
+           function displayPosts(page){
+              const startPost = (page - 1) * postsPerPage + 1;
+              const endPost = Math.min(page * postsPerPage, totalPages);
+
+              let postHtml = `
+                 <p>이 페이지는 ${startPost} 부터 ${endPost} 에 속해 있어요.
+              `;
+              $("#nowPage").html(postHtml);
+           }
+
+           function createPaging(currentPage){
+              $("#paging").empty();
+
+              const currentPageGroup =  Math.ceil(currentPage / pagesPerGroup); //현재 페이지 그룹
+              const startPage = (currentPageGroup - 1) * pagesPerGroup + 1;
+              const endPage = Math.min(currentPageGroup * pagesPerGroup, totalPages);
+              //java
+              /*
+                const pendPage = Math.min(currenctPageGroup * pagesPerGroup);
+                const endPage = (pendPage > totalPages) ? totalPages : pendPage;
+              */
+
+              //이전페이지 그룹 버튼
+              if(currentPageGroup > 1) {
+                 $("#paging").append(`<li class="pg" data-page="${startPage - 1}">이전</li>`);
+              }
+              
+              for(let i = startPage; i <= endPage; i++) {
+                 $("#paging").append(`<li class="pg" data-page="${i}")>${i}</li>`);
+              }
+
+              //다음페이지 그룹
+              if(endPage < totalPages) {
+                $("#paging").append(`<li class="pg" data-page="${endPage  + 1}">다음</li>`);
+              }
+           }
+
+          $(document).on("click", ".pg", function(){
+             const cpage = $(this).data('page');
+             if(cpage !== currentPage) {
+                currentPage = cpage;
+                displayPosts(currentPage);
+                createPaging(currentPage);
+             }
+             
+          });
+
+          displayPosts(currentPage);
+          createPaging(currentPage);
+           
+        });
+    </script>
+</body>
+</html>
